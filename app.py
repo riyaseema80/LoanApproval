@@ -102,6 +102,10 @@ if st.button("🚀 Predict Loan Status"):
     input_data = pd.get_dummies(input_data)
     input_data = input_data.reindex(columns=X.columns, fill_value=0)
 
+    # 🔥 FIX (VERY IMPORTANT)
+    input_data = input_data.fillna(0)
+
+    # Prediction
     result = model.predict(input_data)
     probability = model.predict_proba(input_data)[0][1]
 
@@ -119,8 +123,8 @@ if st.button("🚀 Predict Loan Status"):
             unsafe_allow_html=True
         )
 
-    # Show probability
+    # Probability
     st.markdown(
-        f"<h4 style='text-align:center;'>Approval Probability: {round(probability*100, 2)}%</h4>",
+        f"<h4 style='text-align:center;'>📊 Approval Probability: {round(probability*100, 2)}%</h4>",
         unsafe_allow_html=True
     )
