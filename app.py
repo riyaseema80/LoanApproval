@@ -29,6 +29,10 @@ df["Credit_History"].fillna(df["Credit_History"].mode()[0], inplace=True)
 
 # 🔥 FIX 1: Convert Dependents properly
 df["Dependents"] = df["Dependents"].replace("3+", 3)
+# Fix Dependents (FINAL FIX)
+df["Dependents"] = df["Dependents"].replace("3+", "3")
+df["Dependents"] = pd.to_numeric(df["Dependents"], errors='coerce')
+df["Dependents"].fillna(0, inplace=True)
 df["Dependents"] = df["Dependents"].astype(int)
 
 # Convert target
