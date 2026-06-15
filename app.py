@@ -40,8 +40,8 @@ y = df["Loan_Status"]
 # Encoding
 X = pd.get_dummies(X, drop_first=True)
 
-# Train model
-model = LogisticRegression()
+# 🔥 FIX: Increase iterations
+model = LogisticRegression(max_iter=1000)
 model.fit(X, y)
 
 # ---------------- UI ---------------- #
@@ -69,12 +69,12 @@ st.subheader("💵 Financial Information")
 col3, col4 = st.columns(2)
 
 with col3:
-    ApplicantIncome = st.number_input("Applicant Income", min_value=0)
-    LoanAmount = st.number_input("Loan Amount", min_value=0)
+    ApplicantIncome = st.number_input("Applicant Income", min_value=0.0)
+    LoanAmount = st.number_input("Loan Amount", min_value=0.0)
 
 with col4:
-    CoapplicantIncome = st.number_input("Coapplicant Income", min_value=0)
-    Loan_Amount_Term = st.number_input("Loan Term", min_value=0)
+    CoapplicantIncome = st.number_input("Coapplicant Income", min_value=0.0)
+    Loan_Amount_Term = st.number_input("Loan Term", min_value=0.0)
 
 Credit_History = st.selectbox("Credit History", [1.0, 0.0])
 
@@ -100,10 +100,13 @@ if st.button("🚀 Predict Loan Status"):
 
     # Encode input
     input_data = pd.get_dummies(input_data)
+
+    # Match training columns
     input_data = input_data.reindex(columns=X.columns, fill_value=0)
 
-    # 🔥 FIX (VERY IMPORTANT)
-    input_data = input_data.fillna(0)
+    # 🔥 CRITICAL FIXES
+    input_data = input_data.astype(float)   # ensure numeric
+    input_data = input_data.fillna(0)       # remove NaN
 
     # Prediction
     result = model.predict(input_data)
@@ -113,18 +116,9 @@ if st.button("🚀 Predict Loan Status"):
 
     # Output
     if result[0] == 1:
-        st.markdown(
-            f"<h2 style='text-align:center; color: green;'>✅ Loan Approved</h2>",
-            unsafe_allow_html=True
-        )
+        st.success("✅ Loan Approved")
     else:
-        st.markdown(
-            f"<h2 style='text-align:center; color: red;'>❌ Loan Not Approved</h2>",
-            unsafe_allow_html=True
-        )
+        st.error("❌ Loan Not Approved")
 
     # Probability
-    st.markdown(
-        f"<h4 style='text-align:center;'>📊 Approval Probability: {round(probability*100, 2)}%</h4>",
-        unsafe_allow_html=True
-    )
+    st.info(f"📊 Approval Probability: {round(probability*100, 2)}%")
